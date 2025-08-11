@@ -1,1 +1,2 @@
-from .setup_db import init_db, get_connection
+from .db_setup import init_db
+from .db_utils import store_embeddings, get_connection, perform_vector_search

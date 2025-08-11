@@ -1,21 +1,11 @@
-import psycopg2
-from app.config import Config
-
-def get_connection():
-    return psycopg2.connect(
-            host=Config.DB_HOST,
-            port=Config.DB_PORT,
-            user=Config.DB_USER,
-            password=Config.DB_PASSWORD,
-            database=Config.DB_NAME
-    )
+from .db_utils import get_connection
 
 def init_db():
     conn = get_connection()
     cur = conn.cursor()
     try:
         cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
-        cur.execute(f"""
+        cur.execute("""
             CREATE TABLE IF NOT EXISTS videos (
                 id SERIAL PRIMARY KEY,
                 video_id TEXT UNIQUE NOT NULL,

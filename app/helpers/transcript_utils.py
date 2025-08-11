@@ -19,3 +19,49 @@ def chunk_transcript(transcript):
     chunk_documents = text_splitter.create_documents([transcript])
     chunks = [document.page_content for document in chunk_documents]
     return chunks
+
+def generate_embedding(query):
+    response = Config.OPENAI_CLIENT.embeddings.create(
+            model="text-embedding-3-small",
+            input=query
+        )
+    return response.data[0].embedding
+
+def ask_transcript_question(question, video_id):
+    from app.db.db_utils import perform_vector_search
+    original_question = question
+    embedding = generate_embedding(question)
+    relevant_answers = perform_vector_search(embedding, video_id, limit=5)
+    print(relevant_answers)
+    if not relevant_answers:
+        return "I couldn't find any relevant answers. Please ask another question."
+
+    context = "\n".join([
+        f"- {result[0]} (Similarity: {result[1]:.2f})"
+        for result in relevant_answers
+    ])
+
+    prompt = f"""You are an assistant that answers questions based on the transcript of a YouTube video.
+
+    Use the following transcript excerpts to answer the user's question. 
+    If the excerpts don't contain enough relevant information, say that you can't find the answer in the transcript.
+
+    Transcript excerpts:
+    {context}
+
+    User's Question: {original_question}
+
+    Answer clearly, concisely, and based only on the provided transcript content. Do not use statements like "Based on the transcript". If you add extra knowledge, make it clear that it's outside the transcript."""
+
+    response = Config.OPENAI_CLIENT.responses.create(
+        model="gpt-4",
+        input=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.7,
+    )
+    print(response.output_text)
+    return response.output_text
