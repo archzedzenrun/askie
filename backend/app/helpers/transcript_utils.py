@@ -27,7 +27,7 @@ def generate_embedding(query):
         )
     return response.data[0].embedding
 
-def ask_transcript_question(question, video_id):
+def generate_response(question, video_id):
     from app.db.db_utils import perform_vector_search
     original_question = question
     embedding = generate_embedding(question)

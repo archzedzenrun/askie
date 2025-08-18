@@ -19,6 +19,13 @@ def init_db():
                 transcript TEXT NOT NULL,
                 embedding vector(1536)
             );
+            CREATE TABLE IF NOT EXISTS "messages" (
+                id SERIAL PRIMARY KEY,
+                video_id INTEGER REFERENCES videos(id) ON DELETE CASCADE,
+                role TEXT CHECK (role IN ('user','assistant')) NOT NULL,
+                message TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
         """)
         conn.commit()
         print("Database setup complete!")

@@ -1,6 +1,7 @@
 import psycopg2
 from app.config import Config
-from app.helpers.transcript_utils import generate_embedding
+from app.helpers.transcript_utils import generate_embedding, generate_response
+
 
 def get_connection():
     return psycopg2.connect(
@@ -56,3 +57,30 @@ def perform_vector_search(embedding, video_id, limit=5):
     except Exception as e:
         print("Error performing vector search:", e)
         return []
+
+def store_messages(query, video_id):
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT id FROM videos WHERE video_id = %s", (video_id,))
+            video_db_id = cursor.fetchone()[0]
+
+            cursor.execute(
+                """
+                INSERT INTO messages (video_id, role, message)
+                VALUES (%s, %s, %s)
+                """,
+                (video_db_id, "user", query)
+            )
+
+            response = generate_response(query, video_id)
+
+            cursor.execute(
+                """
+                INSERT INTO messages (video_id, role, message)
+                VALUES (%s, %s, %s)
+                """,
+                (video_db_id, "assistant", response)
+            )
+
+        conn.commit()
+        return response
