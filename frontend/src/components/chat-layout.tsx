@@ -2,63 +2,56 @@ import { useState, useEffect } from "react"
 import { VideoList } from "./video-list"
 import { ChatArea } from "./chat-area"
 import { getVideos } from "@/services/videosService"
-import type { VideoData } from "@/types/types"
+import type { VideoData, Message } from "@/types/types"
 import { getMessages } from "@/services/videosService"
 
-export interface VideoConversation {
-  id: string
-  title: string
-  description?: string
-  videoId: string
-  lastQuery?: string
-}
-
-export interface Message {
-  id: string
-  content: string
-  sender: "user" | "assistant"
-  timestamp: string
-}
+// export interface VideoConversation {
+//   id: string
+//   title: string
+//   description?: string
+//   videoId: string
+//   lastQuery?: string
+// }
 
 // Mock data for demonstration
-const mockConversations: VideoConversation[] = [
-  {
-    id: "1",
-    title: "Introduction to Machine Learning",
-    description: "Basic concepts and algorithms",
-    videoId: "dQw4w9WgXcQ",
-    lastQuery: "What is supervised learning?",
-  },
-  {
-    id: "2",
-    title: "React Hooks Deep Dive",
-    description: "Advanced React patterns",
-    videoId: "abc123def456",
-    lastQuery: "How does useEffect work?",
-  },
-  {
-    id: "3",
-    title: "Database Design Principles",
-    videoId: "xyz789uvw012",
-    lastQuery: "What is normalization?",
-  },
-]
+// const mockConversations: VideoConversation[] = [
+//   {
+//     id: "1",
+//     title: "Introduction to Machine Learning",
+//     description: "Basic concepts and algorithms",
+//     videoId: "dQw4w9WgXcQ",
+//     lastQuery: "What is supervised learning?",
+//   },
+//   {
+//     id: "2",
+//     title: "React Hooks Deep Dive",
+//     description: "Advanced React patterns",
+//     videoId: "abc123def456",
+//     lastQuery: "How does useEffect work?",
+//   },
+//   {
+//     id: "3",
+//     title: "Database Design Principles",
+//     videoId: "xyz789uvw012",
+//     lastQuery: "What is normalization?",
+//   },
+// ]
 
-const mockMessages: Message[] = [
-    {
-      id: "1",
-      content: "What is supervised learning?",
-      sender: "user",
-      timestamp: "10:30 AM",
-    },
-    {
-      id: "2",
-      content:
-        "Supervised learning is a type of machine learning where the algorithm learns from labeled training data. In the video, it's explained as a method where you provide the model with input-output pairs, allowing it to learn the mapping function between inputs and desired outputs.",
-      sender: "assistant",
-      timestamp: "10:30 AM",
-    },
-  ]
+// const mockMessages: Message[] = [
+//     {
+//       id: "1",
+//       content: "What is supervised learning?",
+//       sender: "user",
+//       timestamp: "10:30 AM",
+//     },
+//     {
+//       id: "2",
+//       content:
+//         "Supervised learning is a type of machine learning where the algorithm learns from labeled training data. In the video, it's explained as a method where you provide the model with input-output pairs, allowing it to learn the mapping function between inputs and desired outputs.",
+//       sender: "assistant",
+//       timestamp: "10:30 AM",
+//     },
+//   ]
 //   "2": [
 //     {
 //       id: "1",
@@ -138,18 +131,18 @@ export function ChatLayout() {
   }
 
   const handleAddVideo = (videoUrl: string) => {
-    const videoId = extractVideoId(videoUrl)
-    if (!videoId) return
+    // const videoId = extractVideoId(videoUrl)
+    // if (!videoId) return
 
-    const newConversation: VideoConversation = {
-      id: Date.now().toString(),
-      title: `Video ${videoId}`,
-      description: "Processing transcript...",
-      videoId,
-    }
+    // const newConversation: VideoConversation = {
+    //   id: Date.now().toString(),
+    //   title: `Video ${videoId}`,
+    //   description: "Processing transcript...",
+    //   videoId,
+    // }
 
-    // setConversations((prev) => [newConversation, ...prev])
-    setMessages((prev) => ({ ...prev, [newConversation.id]: [] }))
+    // // setConversations((prev) => [newConversation, ...prev])
+    // setMessages((prev) => ({ ...prev, [newConversation.id]: [] }))
   }
 
   const extractVideoId = (url: string): string | null => {

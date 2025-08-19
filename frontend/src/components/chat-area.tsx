@@ -2,11 +2,11 @@ import type React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, ExternalLink } from "lucide-react"
+import { Send, ExternalLink, FileText } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
-import type { Message } from "@/types/types"
-import type { VideoData } from "@/types/types"
+import type { VideoData, Message } from "@/types/types"
 
 interface ChatAreaProps {
   selectedVideo: VideoData | null
@@ -18,6 +18,10 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
   const [newMessage, setNewMessage] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false)
+  const [summary, setSummary] = useState("")
+  const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false)
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -28,16 +32,30 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
 
   const handleSend = () => {
     if (newMessage.trim()) {
+      console.log("SENDING MESSAGE:", newMessage)
       onSendMessage(newMessage.trim())
       setNewMessage("")
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSend()
     }
+  }
+
+  const handleGenerateSummary = async () => {
+    setIsGeneratingSummary(true)
+    setIsSummaryModalOpen(true)
+
+    setTimeout(() => {
+      // const conversationText = messages.map((m) => `${m.sender}: ${m.content}`).join("\n")
+      // setSummary(
+      //   `Summary of conversation about "${conversation?.title}":\n\nThis conversation covered key topics from the video transcript. The user asked ${messages.filter((m) => m.sender === "user").length} questions and received detailed responses about the video content. Main discussion points included analysis of the video's core themes and specific details requested by the user.`,
+      // )
+      setIsGeneratingSummary(false)
+    }, 2000)
   }
 
   if (!selectedVideo) {
@@ -55,23 +73,97 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
     <div className="flex flex-col h-full">
       {/* Chat Header */}
       <div className="flex justify-between p-4 border-b border-border">
-        <div className="flex-1 min-w-0">
+        <Dialog open={isSummaryModalOpen} onOpenChange={setIsSummaryModalOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              title="Generate summary"
+              onClick={handleGenerateSummary}
+              disabled={messages.length === 0}
+              className="!bg-transparent hover:!bg-accent focus:outline-none focus:bg-accent !border-0"
+            >
+              {/* h-6 w-6 p-0 !bg-transparent hover:!bg-destructive/10 hover:!text-destructive !border-0 */}
+              <FileText className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Conversation Summary</DialogTitle>
+            </DialogHeader>
+              <div className="mt-4">
+                {isGeneratingSummary ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <span className="ml-3 text-muted-foreground">Generating summary...</span>
+                  </div>
+                ) : (
+                  <div className="prose prose-sm max-w-none">
+                    <pre className="whitespace-pre-wrap text-sm leading-relaxed">{summary}</pre>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+        <div className="flex-1 min-w-0 flex flex-col items-start ml-2">
           <h3 className="font-medium truncate">{selectedVideo.title}</h3>
           {selectedVideo.description && (
             <p className="text-sm text-muted-foreground truncate">{selectedVideo.description}</p>
           )}
-          <p className="text-xs font-mono text-muted-foreground">ID: {selectedVideo.video_id}</p>
+          <p className="text-xs font-mono text-muted-foreground">ID: {selectedVideo.video_id}
+            <Button
+            variant="ghost"
+            size="icon"
+            title="Open video"
+            className="!bg-transparent hover:!bg-accent focus:outline-none focus:bg-accent !border-0 w-1 h-1"
+          >
+            <ExternalLink className="h-4 w-4" />
+          </Button>
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
+          <Dialog open={isSummaryModalOpen} onOpenChange={setIsSummaryModalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Generate summary"
+                onClick={handleGenerateSummary}
+                disabled={messages.length === 0}
+                className="!bg-transparent hover:!bg-accent focus:!outline-none focus:!bg-accent !border-0"
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Conversation Summary</DialogTitle>
+              </DialogHeader>
+              <div className="mt-4">
+                {isGeneratingSummary ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <span className="ml-3 text-muted-foreground">Generating summary...</span>
+                  </div>
+                ) : (
+                  <div className="prose prose-sm max-w-none">
+                    <pre className="whitespace-pre-wrap text-sm leading-relaxed">{summary}</pre>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* <Button
             variant="ghost"
             size="icon"
             title="Open video"
             className="!bg-transparent hover:bg-accent focus:outline-none focus:bg-accent border-0"
           >
             <ExternalLink className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -105,7 +197,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
             placeholder="Ask a question about this video..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             className="flex-1"
           />
           <Button 

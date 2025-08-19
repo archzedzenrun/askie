@@ -89,7 +89,7 @@ def query():
     
     try:
         answer = store_messages(query, video_id)
-        return jsonify({"answer": answer}), 200
+        return jsonify(answer), 201
         with get_connection() as conn:
             with conn.cursor() as cursor:
                

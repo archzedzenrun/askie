@@ -59,6 +59,7 @@ def perform_vector_search(embedding, video_id, limit=5):
         return []
 
 def store_messages(query, video_id):
+    result = { "user": [], "assistant": [] }
     with get_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("SELECT id FROM videos WHERE video_id = %s", (video_id,))
@@ -68,9 +69,19 @@ def store_messages(query, video_id):
                 """
                 INSERT INTO messages (video_id, role, message)
                 VALUES (%s, %s, %s)
+                RETURNING id, video_id, role, message, created_at
                 """,
                 (video_db_id, "user", query)
             )
+
+            user_row = cursor.fetchone()
+            result["user"] = {
+                    "id": str(user_row[0]),
+                    "video_id": user_row[1],
+                    "role": user_row[2],
+                    "content": user_row[3],
+                    "created_at": user_row[4].isoformat()
+            }
 
             response = generate_response(query, video_id)
 
@@ -78,9 +89,19 @@ def store_messages(query, video_id):
                 """
                 INSERT INTO messages (video_id, role, message)
                 VALUES (%s, %s, %s)
+                RETURNING id, video_id, role, message, created_at;
                 """,
                 (video_db_id, "assistant", response)
             )
 
+            assistant_row = cursor.fetchone()
+            result["assistant"] = {
+                    "id": str(assistant_row[0]),
+                    "video_id": assistant_row[1],
+                    "role": assistant_row[2],
+                    "content": assistant_row[3],
+                    "created_at": assistant_row[4].isoformat()
+            }
+
         conn.commit()
-        return response
+        return result

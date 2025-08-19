@@ -125,9 +125,9 @@ export function VideoList({
                   <Trash2 className="h-3 w-3" />
                 </Button>
               </div>
-              {video.lastQuery && (
+              {/* {video.lastQuery && (
                 <p className="text-xs text-muted-foreground italic truncate">Last: {video.lastQuery}</p>
-              )}
+              )} */}
             </div>
           </div>
         ))}
