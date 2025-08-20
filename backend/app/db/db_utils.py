@@ -80,7 +80,7 @@ def store_messages(query, video_id):
                     "video_id": user_row[1],
                     "role": user_row[2],
                     "content": user_row[3],
-                    "created_at": user_row[4].isoformat()
+                    "created_at": user_row[4].strftime('%d-%m-%Y %H:%M:%S')
             }
 
             response = generate_response(query, video_id)
@@ -100,7 +100,7 @@ def store_messages(query, video_id):
                     "video_id": assistant_row[1],
                     "role": assistant_row[2],
                     "content": assistant_row[3],
-                    "created_at": assistant_row[4].isoformat()
+                    "created_at": assistant_row[4].strftime('%d-%m-%Y %H:%M:%S')
             }
 
         conn.commit()

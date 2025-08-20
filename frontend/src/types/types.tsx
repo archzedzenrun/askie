@@ -14,4 +14,7 @@ export interface Message {
   video_id: string;
 }
 
-export type NewMessageData = Pick<Message, "video_id" | "content">;
+export interface NewMessageData {
+  video_id: string;
+  query: string;
+}

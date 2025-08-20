@@ -127,7 +127,7 @@ def get_messages(video_id):
                         "id": str(row[0]),
                         "role": row[1],
                         "content": row[2],
-                        "created_at": row[3].isoformat(),
+                        "created_at": row[3].strftime('%d-%m-%Y %H:%M:%S'),
                         "video_id": row[4]
                     }
                     for row in rows

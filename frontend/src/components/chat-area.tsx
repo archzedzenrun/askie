@@ -183,7 +183,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
               >
                 <p className="text-sm leading-relaxed">{message.content}</p>
               </div>
-              <span className="text-xs text-muted-foreground">{message.created_at}</span>
+              <span className="text-xs text-muted-foreground">{message.created_at === "temp" ? "Sending..." : message.created_at}</span>
             </div>
           </div>
         ))}
