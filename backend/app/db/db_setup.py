@@ -11,6 +11,7 @@ def init_db():
                 video_id TEXT UNIQUE NOT NULL,
                 title TEXT,
                 description TEXT,
+                summary TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             CREATE TABLE IF NOT EXISTS "transcript_embeddings" (

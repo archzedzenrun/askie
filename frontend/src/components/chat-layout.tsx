@@ -43,6 +43,7 @@ export function ChatLayout() {
   }
 
   const handleAddVideo = (videoUrl: string) => {
+    console.log(extractVideoId(videoUrl))
     // const videoId = extractVideoId(videoUrl)
     // if (!videoId) return
 

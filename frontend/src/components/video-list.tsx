@@ -13,16 +13,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Plus, Trash2 } from "lucide-react"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
-import type { VideoConversation } from "./chat-layout"
+// import type { VideoConversation } from "./chat-layout"
 import type { VideoData } from "@/types/types"
 
 interface VideoListProps {
   videos: VideoData[]
   selectedVideo: VideoData | null
   onSelectVideo: (video: VideoData) => void
-  onAddVideo: (videoUrl: string) => void
+  onAddVideo: (videoUrl: string, title: string, description: string) => void
 }
 
 export function VideoList({
@@ -35,6 +37,9 @@ export function VideoList({
   const [videoUrl, setVideoUrl] = useState("")
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [videoToDelete, setVideoToDelete] = useState<VideoConversation | null>(null)
+  const [videoTitle, setVideoTitle] = useState("")
+  const [videoDescription, setVideoDescription] = useState("")
+  const [addVideoModalOpen, setAddVideoModalOpen] = useState(false)
 
   const handleAddVideo = () => {
     if (videoUrl.trim()) {
@@ -43,11 +48,22 @@ export function VideoList({
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      handleAddVideo()
-    }
+  // const handleKeyPress = (e: React.KeyboardEvent) => {
+  //   if (e.key === "Enter") {
+  //     e.preventDefault()
+  //     handleAddVideo()
+  //   }
+  // }
+
+  const handleAddVideoClick = () => {
+    setAddVideoModalOpen(true)
+  }
+
+  const handleCancelAddVideo = () => {
+    setVideoUrl("")
+    setVideoTitle("")
+    setVideoDescription("")
+    setAddVideoModalOpen(false)
   }
 
   const handleDeleteClick = (e: React.MouseEvent, conversation: VideoConversation) => {
@@ -73,29 +89,22 @@ export function VideoList({
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-border">
-        <h2 className="text-xl font-semibold mb-3">Video Transcripts</h2>
-        <div className="space-y-2">
+        {/* <h2 className="text-xl font-semibold mb-3">Video Transcripts</h2> */}
+        {/* <div className="space-y-2">
           <Input
             placeholder="Enter video URL or ID..."
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
+            onKeyDown={handleKeyPress}
+          /> */}
           <Button
-            onClick={handleAddVideo}
-            disabled={!videoUrl.trim()}
-            className={cn(
-              "w-full text-white transition-colors",
-              !videoUrl.trim()
-                ? "!bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "!bg-blue-600 hover:bg-blue-700 active:bg-blue-800",
-            )}
-            size="sm"
-          >
+            onClick={handleAddVideoClick}
+            className="w-full !bg-blue-600 hover:!bg-blue-700 active:!bg-blue-800 !text-white transition-colors"
+            size="sm">
             <Plus className="h-4 w-4 mr-2" />
             Add Video
           </Button>
-        </div>
+        {/* </div> */}
       </div>
 
       {/* Video List */}
@@ -132,6 +141,64 @@ export function VideoList({
           </div>
         ))}
       </div>
+
+      <Dialog open={addVideoModalOpen} onOpenChange={setAddVideoModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Video</DialogTitle>
+            {/* <DialogDescription>
+              Enter the video URL or ID along with a title and optional description.
+            </DialogDescription> */}
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="video-url">Video URL or ID *</Label>
+              <Input
+                id="video-url"
+                placeholder="Enter video URL or ID..."
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="video-title">Title *</Label>
+              <Input
+                id="video-title"
+                placeholder="Enter video title..."
+                value={videoTitle}
+                onChange={(e) => setVideoTitle(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="video-description">Description</Label>
+              <Textarea
+                id="video-description"
+                placeholder="Enter video description (optional)..."
+                value={videoDescription}
+                onChange={(e) => setVideoDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelAddVideo}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddVideo}
+              disabled={!videoUrl.trim() || !videoTitle.trim()}
+              className={cn(
+                "transition-colors",
+                !videoUrl.trim() || !videoTitle.trim()
+                  ? "!bg-gray-300 !text-gray-500 cursor-not-allowed"
+                  : "!bg-blue-600 hover:!bg-blue-700 !text-white",
+              )}
+            >
+              Add Video
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Modal */}
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
