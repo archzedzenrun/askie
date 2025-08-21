@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog"
 import { Plus, Trash2 } from "lucide-react"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 // import type { VideoConversation } from "./chat-layout"
@@ -43,7 +42,7 @@ export function VideoList({
 
   const handleAddVideo = () => {
     if (videoUrl.trim()) {
-      onAddVideo(videoUrl.trim())
+      onAddVideo(videoUrl.trim(), videoTitle.trim(), videoDescription.trim())
       setVideoUrl("")
     }
   }
@@ -143,12 +142,12 @@ export function VideoList({
       </div>
 
       <Dialog open={addVideoModalOpen} onOpenChange={setAddVideoModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Add New Video</DialogTitle>
-            {/* <DialogDescription>
+            {/* <div id="hidden-description" className="sr-only">
               Enter the video URL or ID along with a title and optional description.
-            </DialogDescription> */}
+            </div> */}
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -171,12 +170,13 @@ export function VideoList({
             </div>
             <div className="space-y-2">
               <Label htmlFor="video-description">Description</Label>
-              <Textarea
+              <Input
                 id="video-description"
                 placeholder="Enter video description (optional)..."
                 value={videoDescription}
                 onChange={(e) => setVideoDescription(e.target.value)}
-                rows={3}
+                // rows={3}
+                // className="!w-full resize-none"
               />
             </div>
           </div>
