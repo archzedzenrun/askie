@@ -65,3 +65,29 @@ def generate_response(question, video_id):
     )
     print(response.output_text)
     return response.output_text
+
+def generate_summary(transcript):
+    prompt = f"""You are a helpful assistant. Summarize the following transcript of a video. 
+    
+    Provide your response in the following format:
+
+    - Topic: 1-2 sentence summary of the main subject
+    - Key Points: 3–5 bullet points with the most important details
+    - Overall Takeaway: 1–3 sentences
+
+    Transcript:
+    {transcript}
+    """
+
+    response = Config.OPENAI_CLIENT.responses.create(
+        model="gpt-4",
+        input=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.7,
+    )
+    print(response.output_text)
+    return response.output_text

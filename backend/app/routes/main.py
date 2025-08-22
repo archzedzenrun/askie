@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from youtube_transcript_api import YouTubeTranscriptApi
-from app.helpers import flatten_transcript, chunk_transcript
+from app.helpers import flatten_transcript, chunk_transcript, generate_summary
 from app.db import get_connection, store_embeddings, store_messages
 
 
@@ -31,7 +31,8 @@ def videos():
                         "video_id": row[1],
                         "title": row[2],
                         "description": row[3],
-                        "date_created": row[4].isoformat()
+                        "summary": row[4],
+                        "date_created": row[5].strftime('%d-%m-%Y %H:%M:%S')
                     })
                 response["message"] = f"""{len(response["data"])} {"Transcript" if len(response["data"]) == 1 else "Transcripts"} retrieved successfully"""
                 return jsonify(response), 200
@@ -59,19 +60,31 @@ def embed_transcript():
                 if not transcript:
                     return jsonify({"error": "No transcript found for the provided video id"}), 404
                 
-                cursor.execute(
-                    "INSERT INTO videos (video_id, title, description) VALUES (%s, %s, %s) RETURNING id",
-                    (video_id, data["title"], data.get("description", ""))
-                )
-                video_db_id = cursor.fetchone()[0]
-    
                 flat_transcript = flatten_transcript(transcript)
+                summary = generate_summary(flat_transcript)
                 chunked_transcript = chunk_transcript(flat_transcript)
+                print(summary)
+                cursor.execute(
+                    "INSERT INTO videos (video_id, title, description, summary) VALUES (%s, %s, %s, %s) RETURNING *",
+                    (video_id, data["title"], data.get("description", ""), summary)
+                )
+                video_row = cursor.fetchone()
+                print("VIDEO ROW:", video_row)
+                video_db_id = video_row[0]
 
+                response = {
+                        "id": str(video_row[0]),
+                        "video_id": video_row[1],
+                        "title": video_row[2],
+                        "description": video_row[3],
+                        "summary": video_row[4],
+                        "date_created": video_row[5].strftime('%d-%m-%Y %H:%M:%S')
+                }
+                print(response)
                 store_embeddings(chunked_transcript, video_db_id, cursor)
                 conn.commit()
 
-        return jsonify({"message": "Embeddings generated successfully!"}), 200
+        return jsonify({"message": "Embeddings generated successfully!", "video_data": response}), 200
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500

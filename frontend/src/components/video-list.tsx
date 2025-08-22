@@ -44,6 +44,7 @@ export function VideoList({
     if (videoUrl.trim()) {
       onAddVideo(videoUrl.trim(), videoTitle.trim(), videoDescription.trim())
       setVideoUrl("")
+      setAddVideoModalOpen(false)
     }
   }
 

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import { VideoList } from "./video-list"
 import { ChatArea } from "./chat-area"
-import { getVideos, getMessages, sendMessage } from "@/services/videosService"
-import type { VideoData, Message, NewMessageData } from "@/types/types"
+import { getVideos, getMessages, sendMessage, newVideo } from "@/services/videosService"
+import type { VideoData, Message, NewMessageData, NewVideoData } from "@/types/types"
 
 export function ChatLayout() {
   const [videos, setVideos] = useState<VideoData[]>([])
@@ -42,9 +42,31 @@ export function ChatLayout() {
     }
   }
 
-  const handleAddVideo = (videoUrl: string) => {
-    console.log(extractVideoId(videoUrl))
-    // const videoId = extractVideoId(videoUrl)
+  const handleAddVideo = async (url: string, title: string, description: string) => {
+    const videoId = extractVideoId(url)
+    if (!videoId) {
+      console.error("Invalid video URL")
+      return
+    }
+
+    const videoData: NewVideoData = {
+      video_id: videoId,
+      title: title,
+      description: description,
+    }
+
+    try {
+      const response = await newVideo(videoData)
+      console.log("New video added:", response)
+      setVideos(prev => [...prev, response.video_data])
+      // setSelectedVideo(response)
+
+      // Fetch messages for the newly added video
+      // const messages = await getMessages(response.video_id)
+      // setMessages(messages)
+    } catch (error) {
+      console.error("Error adding new video:", error)
+    }
     // if (!videoId) return
 
     // const newConversation: VideoConversation = {

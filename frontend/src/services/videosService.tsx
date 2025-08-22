@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { z } from 'zod';
-import type { NewMessageData } from '../types/types';
+import type { NewMessageData, NewVideoData } from '../types/types';
 // import { TranscriptData } from '@/types/types';
 
 // const singleSourceSchema = z.object({
@@ -38,6 +38,11 @@ const getMessages = async (video_id: string) => {
   return res.data;
 }
 
+const newVideo = async (newVideoData: NewVideoData) => {
+  const res = await axios.post(basePath + '/embed_transcript', newVideoData);
+  return res.data;
+}
+
 // const createSource = async (sourceInfo: SourceInput) => {
 //   const res = await axios.post(path + '/new_source', sourceInfo);
 //   return res.data;
@@ -52,4 +57,5 @@ export {
   getVideos,
   sendMessage,
   getMessages,
+  newVideo
 };

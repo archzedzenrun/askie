@@ -3,6 +3,7 @@ export interface VideoData {
   video_id: string;
   title: string;
   description: string;
+  summary: string;
   date_created: string;
 }
 
@@ -17,4 +18,10 @@ export interface Message {
 export interface NewMessageData {
   video_id: string;
   query: string;
+}
+
+export interface NewVideoData {
+  video_id: string;
+  title: string;
+  description?: string;
 }

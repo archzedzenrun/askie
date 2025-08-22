@@ -78,9 +78,8 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
             <Button
               variant="ghost"
               size="icon"
-              title="Generate summary"
+              title="View transcript summary"
               onClick={handleGenerateSummary}
-              disabled={messages.length === 0}
               className="!bg-transparent hover:!bg-accent focus:outline-none focus:bg-accent !border-0"
             >
               {/* h-6 w-6 p-0 !bg-transparent hover:!bg-destructive/10 hover:!text-destructive !border-0 */}
@@ -89,19 +88,19 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Conversation Summary</DialogTitle>
+              <DialogTitle>Video Summary</DialogTitle>
             </DialogHeader>
               <div className="mt-4">
-                {isGeneratingSummary ? (
+                {/* {isGeneratingSummary ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     <span className="ml-3 text-muted-foreground">Generating summary...</span>
                   </div>
-                ) : (
+                ) : ( */}
                   <div className="prose prose-sm max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm leading-relaxed">{summary}</pre>
+                    <pre className="whitespace-pre-wrap text-sm leading-relaxed">{selectedVideo.summary}</pre>
                   </div>
-                )}
+                {/* )} */}
               </div>
             </DialogContent>
           </Dialog>
@@ -123,7 +122,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <Dialog open={isSummaryModalOpen} onOpenChange={setIsSummaryModalOpen}>
             <DialogTrigger asChild>
               <Button
@@ -154,7 +153,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
                 )}
               </div>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
 
           {/* <Button
             variant="ghost"
@@ -164,7 +163,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
           >
             <ExternalLink className="h-4 w-4" />
           </Button> */}
-        </div>
+        {/* </div> */}
       </div>
 
       {/* Messages Area */}
