@@ -19,8 +19,9 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false)
-  const [summary, setSummary] = useState("")
+  const [convoSummary, setConvoSummary] = useState("")
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false)
+  const [isConvoSummaryModalOpen, setIsConvoSummaryModalOpen] = useState(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -47,7 +48,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
 
   const handleGenerateSummary = async () => {
     setIsGeneratingSummary(true)
-    setIsSummaryModalOpen(true)
+    setIsConvoSummaryModalOpen(true)
 
     setTimeout(() => {
       // const conversationText = messages.map((m) => `${m.sender}: ${m.content}`).join("\n")
@@ -60,7 +61,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
 
   if (!selectedVideo) {
     return (
-      <div className="flex-1 flex items-center justify-center text-muted-foreground">
+      <div className="flex-1 flex items-center justify-center text-muted-foreground ml-1">
         <div className="text-center">
           <h3 className="text-lg font-medium mb-2">No video selected</h3>
           <p>Choose a video from the sidebar to start asking questions</p>
@@ -73,62 +74,70 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
     <div className="flex flex-col h-full">
       {/* Chat Header */}
       <div className="flex justify-between p-4 border-b border-border">
-        <Dialog open={isSummaryModalOpen} onOpenChange={setIsSummaryModalOpen}>
-          <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              title="View transcript summary"
-              onClick={handleGenerateSummary}
-              className="!bg-transparent hover:!bg-accent focus:outline-none focus:bg-accent !border-0"
-            >
-              {/* h-6 w-6 p-0 !bg-transparent hover:!bg-destructive/10 hover:!text-destructive !border-0 */}
-              <FileText className="h-4 w-4" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Video Summary</DialogTitle>
-            </DialogHeader>
-              <div className="mt-4">
-                {/* {isGeneratingSummary ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    <span className="ml-3 text-muted-foreground">Generating summary...</span>
-                  </div>
-                ) : ( */}
-                  <div className="prose prose-sm max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm leading-relaxed">{selectedVideo.summary}</pre>
-                  </div>
-                {/* )} */}
-              </div>
-            </DialogContent>
-          </Dialog>
-          
+        <div className="flex items-center gap-2">
+          <Dialog open={isSummaryModalOpen} onOpenChange={setIsSummaryModalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                title="View transcript summary"
+                // onClick={handleGenerateSummary}
+                className="!bg-transparent hover:!bg-accent focus:!outline-none !border-0"
+              >
+                {/* h-6 w-6 p-0 !bg-transparent hover:!bg-destructive/10 hover:!text-destructive !border-0 */}
+                <FileText className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" aria-describedby={undefined}>
+              <DialogHeader>
+                <DialogTitle>Video Summary</DialogTitle>
+              </DialogHeader>
+                <div className="mt-4">
+                  {/* {isGeneratingSummary ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <span className="ml-3 text-muted-foreground">Generating summary...</span>
+                    </div>
+                  ) : ( */}
+                    <div className="prose prose-sm max-w-none">
+                      <pre className="whitespace-pre-wrap text-sm leading-relaxed">{selectedVideo.summary}</pre>
+                    </div>
+                  {/* )} */}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         <div className="flex-1 min-w-0 flex flex-col items-start ml-2">
           <h3 className="font-medium truncate">{selectedVideo.title}</h3>
           {selectedVideo.description && (
             <p className="text-sm text-muted-foreground truncate">{selectedVideo.description}</p>
           )}
           <p className="text-xs font-mono text-muted-foreground">ID: {selectedVideo.video_id}
-            <Button
+            <a
+            href={`https://www.youtube.com/watch?v=${selectedVideo.video_id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            // className="!bg-transparent hover:!bg-accent focus:!outline-none focus:bg-accent !border-0 w-1 h-1"
+            >
+          <Button
             variant="ghost"
             size="icon"
             title="Open video"
-            className="!bg-transparent hover:!bg-accent focus:outline-none focus:bg-accent !border-0 w-1 h-1"
-          >
+            className="!bg-transparent hover:!bg-accent focus:!outline-none focus:bg-accent !border-0 w-1 h-1"
+            >
             <ExternalLink className="h-4 w-4" />
           </Button>
+          </a>
           </p>
         </div>
 
-        {/* <div className="flex items-center gap-2">
-          <Dialog open={isSummaryModalOpen} onOpenChange={setIsSummaryModalOpen}>
+        <div className="flex items-center gap-2">
+          <Dialog open={isConvoSummaryModalOpen} onOpenChange={setIsConvoSummaryModalOpen}>
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                title="Generate summary"
+                title="Generate conversation summary"
                 onClick={handleGenerateSummary}
                 disabled={messages.length === 0}
                 className="!bg-transparent hover:!bg-accent focus:!outline-none focus:!bg-accent !border-0"
@@ -136,7 +145,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
                 <FileText className="h-4 w-4" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>Conversation Summary</DialogTitle>
               </DialogHeader>
@@ -148,12 +157,12 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
                   </div>
                 ) : (
                   <div className="prose prose-sm max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm leading-relaxed">{summary}</pre>
+                    <pre className="whitespace-pre-wrap text-sm leading-relaxed">{convoSummary}</pre>
                   </div>
                 )}
               </div>
             </DialogContent>
-          </Dialog> */}
+          </Dialog>
 
           {/* <Button
             variant="ghost"
@@ -163,7 +172,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
           >
             <ExternalLink className="h-4 w-4" />
           </Button> */}
-        {/* </div> */}
+        </div>
       </div>
 
       {/* Messages Area */}

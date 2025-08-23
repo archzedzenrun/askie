@@ -47,13 +47,18 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  background: transparent;
 }
 button:hover {
   border-color: #646cff;
+  background: accent;
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline-width: 0px;
+  border: 0;
+  background-color: var(--accent-color);
+  /* background: transparent */
 }
 
 @media (prefers-color-scheme: light) {
