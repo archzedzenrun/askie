@@ -7,15 +7,16 @@ from app.db import get_connection, store_embeddings, store_messages
 ytt_api = YouTubeTranscriptApi()
 main = Blueprint('main', __name__)
 
-# @main.route("/api/chunk", methods=["POST"])
-# def chunk():
-#     data = request.get_json()
-#     video_id = data["video_id"]
-#     transcript = ytt_api.fetch(video_id).to_raw_data()
-#     flat_transcript = flatten_transcript(transcript)
-#     chunked_transcript = chunk_transcript(flat_transcript)
-#     print(chunked_transcript)
-#     return jsonify({"chunks": chunked_transcript}), 200
+@main.route("/api/chunk", methods=["POST"])
+def chunk():
+    data = request.get_json()
+    video_id = data["video_id"]
+    transcript = ytt_api.fetch(video_id).to_raw_data()
+    flat_transcript = flatten_transcript(transcript)
+    chunked_transcript = chunk_transcript(flat_transcript)
+    print(len(chunked_transcript))
+    print(chunked_transcript)
+    return jsonify({"chunks": chunked_transcript}), 200
 
 @main.route("/api/videos", methods=["GET"])
 def videos():
@@ -32,7 +33,7 @@ def videos():
                         "title": row[2],
                         "description": row[3],
                         "summary": row[4],
-                        "date_created": row[5].strftime('%d-%m-%Y %H:%M:%S')
+                        "date_created": row[5].strftime('%m-%d-%Y %H:%M:%S')
                     })
                 response["message"] = f"""{len(response["data"])} {"Transcript" if len(response["data"]) == 1 else "Transcripts"} retrieved successfully"""
                 return jsonify(response), 200
@@ -78,7 +79,7 @@ def embed_transcript():
                         "title": video_row[2],
                         "description": video_row[3],
                         "summary": video_row[4],
-                        "date_created": video_row[5].strftime('%d-%m-%Y %H:%M:%S')
+                        "date_created": video_row[5].strftime('%m-%d-%Y %H:%M:%S')
                 }
                 print(response)
                 store_embeddings(chunked_transcript, video_db_id, cursor)
@@ -140,7 +141,7 @@ def get_messages(video_id):
                         "id": str(row[0]),
                         "role": row[1],
                         "content": row[2],
-                        "created_at": row[3].strftime('%d-%m-%Y %H:%M:%S'),
+                        "created_at": row[3].strftime('%m-%d-%Y %H:%M:%S'),
                         "video_id": row[4]
                     }
                     for row in rows

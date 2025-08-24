@@ -177,7 +177,8 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-96">
-        {messages.map((message) => (
+        {messages.length === 0 ? "No messages yet. Start the conversation!" :
+        messages.map((message) => (
           <div
             key={message.id}
             className={cn("flex gap-3 max-w-[85%]", message.role === "user" ? "ml-auto flex-row-reverse" : "")}

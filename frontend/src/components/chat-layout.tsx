@@ -58,6 +58,7 @@ export function ChatLayout() {
     try {
       const response = await newVideo(videoData)
       console.log("New video added:", response)
+      if (!response.video_data) return;
       setVideos(prev => [...prev, response.video_data])
       // setSelectedVideo(response)
 
