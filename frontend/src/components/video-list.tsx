@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, Loader2 } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
@@ -23,7 +23,7 @@ interface VideoListProps {
   videos: VideoData[]
   selectedVideo: VideoData | null
   onSelectVideo: (video: VideoData) => void
-  onAddVideo: (videoUrl: string, title: string, description: string) => void
+  onAddVideo: (videoUrl: string, title: string, description: string) => Promise<void>
 }
 
 export function VideoList({
@@ -39,11 +39,16 @@ export function VideoList({
   const [videoTitle, setVideoTitle] = useState("")
   const [videoDescription, setVideoDescription] = useState("")
   const [addVideoModalOpen, setAddVideoModalOpen] = useState(false)
+  const [isAddingVideo, setIsAddingVideo] = useState(false)
 
-  const handleAddVideo = () => {
-    if (videoUrl.trim()) {
-      onAddVideo(videoUrl.trim(), videoTitle.trim(), videoDescription.trim())
+  const handleAddVideo = async () => {
+    if (videoUrl.trim() && videoTitle.trim()) {
+      setIsAddingVideo(true)
+      await onAddVideo(videoUrl.trim(), videoTitle.trim(), videoDescription.trim())
       setVideoUrl("")
+      setVideoTitle("")
+      setVideoDescription("")
+      setIsAddingVideo(false)
       setAddVideoModalOpen(false)
     }
   }
@@ -64,6 +69,7 @@ export function VideoList({
     setVideoTitle("")
     setVideoDescription("")
     setAddVideoModalOpen(false)
+    setIsAddingVideo(false)
   }
 
   const handleDeleteClick = (e: React.MouseEvent, conversation: VideoConversation) => {
@@ -158,6 +164,7 @@ export function VideoList({
                 placeholder="Enter video URL or ID..."
                 value={videoUrl}
                 onChange={(e) => setVideoUrl(e.target.value)}
+                disabled={isAddingVideo}
               />
             </div>
             <div className="space-y-2">
@@ -167,6 +174,7 @@ export function VideoList({
                 placeholder="Enter video title..."
                 value={videoTitle}
                 onChange={(e) => setVideoTitle(e.target.value)}
+                disabled={isAddingVideo}
               />
             </div>
             <div className="space-y-2">
@@ -176,26 +184,36 @@ export function VideoList({
                 placeholder="Enter video description (optional)..."
                 value={videoDescription}
                 onChange={(e) => setVideoDescription(e.target.value)}
+                disabled={isAddingVideo}
                 // rows={3}
                 // className="!w-full resize-none"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={handleCancelAddVideo}>
+            <Button variant="outline" 
+              onClick={handleCancelAddVideo}
+              disabled={isAddingVideo}>
               Cancel
             </Button>
             <Button
               onClick={handleAddVideo}
-              disabled={!videoUrl.trim() || !videoTitle.trim()}
+              disabled={!videoUrl.trim() || !videoTitle.trim() || isAddingVideo}
               className={cn(
                 "transition-colors",
-                !videoUrl.trim() || !videoTitle.trim()
+                !videoUrl.trim() || !videoTitle.trim() || isAddingVideo
                   ? "!bg-gray-300 !text-gray-500 cursor-not-allowed"
                   : "!bg-blue-600 hover:!bg-blue-700 !text-white",
               )}
             >
-              Add Video
+              {isAddingVideo ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Adding Video...
+                </>
+              ) : (
+                "Add Video"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

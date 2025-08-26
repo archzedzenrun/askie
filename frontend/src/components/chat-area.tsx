@@ -1,11 +1,10 @@
-import type React from "react"
-
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Send, ExternalLink, FileText } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
+import { Send, ExternalLink, FileText } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import type React from "react"
 import type { VideoData, Message } from "@/types/types"
 
 interface ChatAreaProps {
@@ -15,9 +14,8 @@ interface ChatAreaProps {
 }
 
 export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaProps) {
-  const [newMessage, setNewMessage] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
-
+  const [newMessage, setNewMessage] = useState("")
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false)
   const [convoSummary, setConvoSummary] = useState("")
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false)
@@ -33,7 +31,6 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
 
   const handleSend = () => {
     if (newMessage.trim()) {
-      console.log("SENDING MESSAGE:", newMessage)
       onSendMessage(newMessage.trim())
       setNewMessage("")
     }
@@ -177,7 +174,13 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-96">
-        {messages.length === 0 ? "No messages yet. Start the conversation!" :
+        {messages.length === 0 ? 
+        <div className="flex-1 flex items-center justify-center text-muted-foreground ml-1">
+        <div className="text-center">
+          <h3 className="text-lg font-medium mb-2">No messages</h3>
+          <p>Ask a question to start the conversation</p>
+        </div>
+        </div> :
         messages.map((message) => (
           <div
             key={message.id}
