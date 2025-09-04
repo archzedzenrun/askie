@@ -2,7 +2,6 @@ import psycopg2
 from app.config import Config
 from app.helpers.transcript_utils import generate_embedding, generate_response
 
-
 def get_connection():
     return psycopg2.connect(
             host=Config.DB_HOST,
@@ -13,9 +12,6 @@ def get_connection():
     )
 
 def store_embeddings(transcript, video_db_id, cursor):
-    # try:
-    #     conn = get_connection()
-    #     cursor = conn.cursor()
     for snippet in transcript:
         embedding = generate_embedding(snippet)
         cursor.execute(
@@ -23,16 +19,7 @@ def store_embeddings(transcript, video_db_id, cursor):
             (video_db_id, snippet, embedding)
         )
         print(f"Stored embedding for: {snippet[:50]}...")
-
-        # conn.commit()
     print("All embeddings stored successfully!")
-
-    # except Exception as e:
-    #     print("Error generating embeddings:", e)
-
-    # finally:
-    #     cursor.close()
-    #     conn.close()
 
 def perform_vector_search(embedding, video_id, limit=5):
     try:

@@ -3,7 +3,6 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from app.helpers import flatten_transcript, chunk_transcript, generate_summary
 from app.db import get_connection, store_embeddings, store_messages
 
-
 ytt_api = YouTubeTranscriptApi()
 main = Blueprint('main', __name__)
 
@@ -104,12 +103,6 @@ def query():
     try:
         answer = store_messages(query, video_id)
         return jsonify(answer), 201
-        with get_connection() as conn:
-            with conn.cursor() as cursor:
-               
-                results = perform_vector_search(q, cursor, video_id)
-                print(results)
-                return results, 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
