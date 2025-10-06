@@ -43,18 +43,10 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
     }
   }
 
-  const handleGenerateSummary = async () => {
-    setIsGeneratingSummary(true)
-    setIsConvoSummaryModalOpen(true)
-
-    setTimeout(() => {
-      // const conversationText = messages.map((m) => `${m.sender}: ${m.content}`).join("\n")
-      // setSummary(
-      //   `Summary of conversation about "${conversation?.title}":\n\nThis conversation covered key topics from the video transcript. The user asked ${messages.filter((m) => m.sender === "user").length} questions and received detailed responses about the video content. Main discussion points included analysis of the video's core themes and specific details requested by the user.`,
-      // )
-      setIsGeneratingSummary(false)
-    }, 2000)
-  }
+  // const handleGenerateSummary = async () => {
+  //   setIsGeneratingSummary(true)
+  //   setIsConvoSummaryModalOpen(true)
+  // }
 
   if (!selectedVideo) {
     return (
@@ -130,7 +122,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
 
         <div className="flex items-center gap-2">
           <Dialog open={isConvoSummaryModalOpen} onOpenChange={setIsConvoSummaryModalOpen}>
-            <DialogTrigger asChild>
+            {/* <DialogTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
@@ -141,7 +133,7 @@ export function ChatArea({ selectedVideo, messages, onSendMessage }: ChatAreaPro
               >
                 <FileText className="h-4 w-4" />
               </Button>
-            </DialogTrigger>
+            </DialogTrigger> */}
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>Conversation Summary</DialogTitle>

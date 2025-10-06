@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -14,28 +12,30 @@ import {
 } from "@/components/ui/dialog"
 import { Plus, Trash2, Loader2 } from "lucide-react"
 import { Label } from "@/components/ui/label"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
-// import type { VideoConversation } from "./chat-layout"
+import { deleteVideo } from "@/services/videosService"
 import type { VideoData } from "@/types/types"
 
 interface VideoListProps {
   videos: VideoData[]
+  setVideos: (videos: VideoData[]) => void
   selectedVideo: VideoData | null
+  setSelectedVideo: (video: VideoData | null) => void
   onSelectVideo: (video: VideoData) => void
   onAddVideo: (videoUrl: string, title: string, description: string) => Promise<void>
 }
 
 export function VideoList({
   videos,
+  setVideos,
   selectedVideo,
+  setSelectedVideo,
   onSelectVideo,
   onAddVideo,
-  // onDeleteVideo
 }: VideoListProps) {
   const [videoUrl, setVideoUrl] = useState("")
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [videoToDelete, setVideoToDelete] = useState<VideoConversation | null>(null)
   const [videoTitle, setVideoTitle] = useState("")
   const [videoDescription, setVideoDescription] = useState("")
   const [addVideoModalOpen, setAddVideoModalOpen] = useState(false)
@@ -53,13 +53,6 @@ export function VideoList({
     }
   }
 
-  // const handleKeyPress = (e: React.KeyboardEvent) => {
-  //   if (e.key === "Enter") {
-  //     e.preventDefault()
-  //     handleAddVideo()
-  //   }
-  // }
-
   const handleAddVideoClick = () => {
     setAddVideoModalOpen(true)
   }
@@ -72,23 +65,20 @@ export function VideoList({
     setIsAddingVideo(false)
   }
 
-  const handleDeleteClick = (e: React.MouseEvent, conversation: VideoConversation) => {
-    e.stopPropagation()
-    setVideoToDelete(conversation)
+  const handleDeleteClick = () => {
     setDeleteModalOpen(true)
+    console.log(videos)
   }
 
   const handleConfirmDelete = () => {
-    if (videoToDelete) {
-      onDeleteVideo(videoToDelete.id)
-      setDeleteModalOpen(false)
-      setVideoToDelete(null)
-    }
+    deleteVideo(selectedVideo?.video_id || "")
+    setDeleteModalOpen(false)
+    setVideos(videos.filter(v => v.video_id !== selectedVideo?.video_id))
+    setSelectedVideo(null)
   }
 
   const handleCancelDelete = () => {
     setDeleteModalOpen(false)
-    setVideoToDelete(null)
   }
 
   return (
@@ -134,7 +124,7 @@ export function VideoList({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={(e) => handleDeleteClick(e, conversation)}
+                  onClick={handleDeleteClick}
                   className="h-6 w-6 p-0 !bg-transparent hover:!bg-destructive/10 hover:!text-destructive !border-0"
                 >
                   <Trash2 className="h-3 w-3" />
@@ -185,8 +175,6 @@ export function VideoList({
                 value={videoDescription}
                 onChange={(e) => setVideoDescription(e.target.value)}
                 disabled={isAddingVideo}
-                // rows={3}
-                // className="!w-full resize-none"
               />
             </div>
           </div>
@@ -225,15 +213,18 @@ export function VideoList({
           <DialogHeader>
             <DialogTitle>Delete Video Transcript</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{videoToDelete?.title}"? This action cannot be undone and will remove all
+              Are you sure you want to delete "{selectedVideo?.title}"? This action cannot be undone and will remove all
               associated conversation history.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={handleCancelDelete}>
+            <Button variant="ghost" onClick={handleCancelDelete}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleConfirmDelete}>
+            <Button 
+            variant="destructive" 
+            onClick={handleConfirmDelete}
+            className="!bg-red-600 hover:!bg-red-700 active:!bg-red-800 !text-white !border-red-600 hover:!border-red-700">
               Delete
             </Button>
           </DialogFooter>

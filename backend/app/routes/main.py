@@ -6,16 +6,16 @@ from app.db import get_connection, store_embeddings, store_messages
 ytt_api = YouTubeTranscriptApi()
 main = Blueprint('main', __name__)
 
-@main.route("/api/chunk", methods=["POST"])
-def chunk():
-    data = request.get_json()
-    video_id = data["video_id"]
-    transcript = ytt_api.fetch(video_id).to_raw_data()
-    flat_transcript = flatten_transcript(transcript)
-    chunked_transcript = chunk_transcript(flat_transcript)
-    print(len(chunked_transcript))
-    print(chunked_transcript)
-    return jsonify({"chunks": chunked_transcript}), 200
+# @main.route("/api/chunk", methods=["POST"])
+# def chunk():
+#     data = request.get_json()
+#     video_id = data["video_id"]
+#     transcript = ytt_api.fetch(video_id).to_raw_data()
+#     flat_transcript = flatten_transcript(transcript)
+#     chunked_transcript = chunk_transcript(flat_transcript)
+#     print(len(chunked_transcript))
+#     print(chunked_transcript)
+#     return jsonify({"chunks": chunked_transcript}), 200
 
 @main.route("/api/videos", methods=["GET"])
 def videos():
@@ -141,5 +141,26 @@ def get_messages(video_id):
                 ]
                 return jsonify(messages), 200
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@main.route("/api/videos", methods=["DELETE"])
+def delete_video():
+    data = request.get_json()
+    if not data or "video_id" not in data:
+        return jsonify({"error": "No video id provided"}), 400
+    
+    video_id = data["video_id"]
+    print(video_id)
+    
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("DELETE FROM videos WHERE video_id = %s RETURNING *", (video_id,))
+                deleted_row = cursor.fetchone()
+                if not deleted_row:
+                    return jsonify({"message": "Video not found."}), 404
+                conn.commit()
+                return jsonify({"message": "Video deleted successfully."}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

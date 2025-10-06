@@ -60,25 +60,9 @@ export function ChatLayout() {
       console.log("New video added:", response)
       if (!response.video_data) return;
       setVideos(prev => [...prev, response.video_data])
-      // setSelectedVideo(response)
-
-      // Fetch messages for the newly added video
-      // const messages = await getMessages(response.video_id)
-      // setMessages(messages)
     } catch (error) {
       console.error("Error adding new video:", error)
     }
-    // if (!videoId) return
-
-    // const newConversation: VideoConversation = {
-    //   id: Date.now().toString(),
-    //   title: `Video ${videoId}`,
-    //   description: "Processing transcript...",
-    //   videoId,
-    // }
-
-    // // setConversations((prev) => [newConversation, ...prev])
-    // setMessages((prev) => ({ ...prev, [newConversation.id]: [] }))
   }
 
   const extractVideoId = (url: string): string | null => {
@@ -103,7 +87,9 @@ export function ChatLayout() {
       <div className="w-80 border-r border-border flex-shrink-0">
         <VideoList
           videos={videos}
+          setVideos={setVideos}
           selectedVideo={selectedVideo}
+          setSelectedVideo={setSelectedVideo}
           onSelectVideo={handleSelectVideo}
           onAddVideo={handleAddVideo}
         />
